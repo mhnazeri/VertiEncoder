@@ -1,0 +1,120 @@
+# Training parameters
+train_params:
+  debug: True
+  seed: 42 # set to null to ignore fixing seed
+  epochs: 50
+  device: cuda:0 # device name, values: "cpu" or "cuda:x" where 'x' is gpu index, or "cuda:a" to use all GPUs
+  optimizer: adamw
+  save_every: 5
+  grad_clipping: 1.0 # set to zero to disable grad clipping
+  start_saving_best: 5 # start epoch of saving best model
+  compile: True # compile the model (requires PyTorch > 2.0)
+
+# Logger parameters
+logger:
+  workspace: general # workspace name
+  project: vertiencoder # project name
+  experiment_name: dt1- # name of the experiment
+  tags: "ae train"
+  resume: False # (boolean) whether to resume training or not
+  online: True # (boolean) whether to store logs online or not
+  experiment_key: "" # can be retrieved from logger dashboard, available if only resuming
+  offline_directory: ./logs # where to store log data
+  disabled: False # disable the comet ml
+  upload_model: False # upload the model to CometML
+  log_env_details: False # log virtual environment details
+  auto_histogram_weight_logging: True # allows you to enable/disable histogram logging for biases and weights
+  auto_histogram_gradient_logging: True # allows you to enable/disable automatic histogram logging of gradients
+  auto_histogram_activation_logging: True # allows you to enable/disable automatic histogram logging of activations
+
+
+# Dataloader parameters
+dataloader:
+  num_workers: 10 # Allowing multi-processing
+  batch_size: 32
+  shuffle: True # whether to shuffle data or not
+  pin_memory: True # use pageable memory or pinned memory (https://developer.nvidia.com/blog/how-optimize-data-transfers-cuda-cc/)
+  prefetch_factor: 4
+
+# Train dataset parameters
+dataset:
+  root: vertiencoder/data/data_train.pkl # where data resides
+  train: True # train data
+  block_size: 20 # block size for the transformer
+  f_size: 7 # filter size to smooth cmd
+  height_diff: 0.5 # difference between min and max height with respect to robot
+  stats: vertiencoder/data/train/stats.pkl
+  pred_len: 1 # prediction length
+  task: fkd # downstream task. Options: ['fkd', 'bc', 'ikd']
+
+# Validation dataset parameters/ only change parameters that are different from train data
+val_dataset:
+  train: False # val data
+  root: vertiencoder/data/val/data_val.pkl
+  task: ${dataset.task} # downstream task. Options: ['fkd', 'bc', 'ikd']
+
+# directories
+directory:
+  model_name: model-name # file name for saved model. To be set automatically, no need to change
+  save: vertiencoder/checkpoint
+  load: vertiencoder/checkpoint/model-name-best.pt
+
+# model parameters
+model:
+  finetune: True
+  transformer: ${from_yaml:vertiencoder/conf/transformer.yaml, model} # get the 'model' info from the transformer config
+  transformer_weight: vertiencoder/checkpoint/vertiencoder-13/vertiencoder-13-E300.tar
+  bc_model: ${from_yaml:vertiencoder/conf/bc_model.yaml, model}
+  fkd_model: ${from_yaml:vertiencoder/conf/fkd_model.yaml, model}
+  ikd_model: ${from_yaml:vertiencoder/conf/ikd_model.yaml, model}
+  action_encoder:
+    latent_dim: ${model.transformer.action_encoder.latent_dim}
+    in_dim: ${model.transformer.action_encoder.in_dim}
+
+# model initializer
+init_model:
+  method: xavier_uniform # kaiming_normal, kaiming_uniform, normal, uniform, xavier_normal, xavier_uniform
+  mean: 0.0 # mean of normal distribution
+  std: 0.5 # standard deviation for normal distribution
+  low: 0.0 # minimum threshold for uniform distribution
+  high: 1.0 # maximum threshold for uniform distribution
+  mode: fan_in # either 'fan_in' (default) or 'fan_out'. Choosing 'fan_in' preserves the magnitude of the variance of the weights in the forward pass. Choosing 'fan_out' preserves the magnitudes in the backwards pass.
+  nonlinearity: leaky_relu # the non-linear function (nn.functional name), recommended to use only with 'relu' or 'leaky_relu' (default).
+  gain: 1.0 # an optional scaling factor for xavier initialization
+
+# AdamW parameters if using Adam optimizer
+adamw:
+  lr: 5e-4
+  betas:
+    - 0.9
+    - 0.999
+  eps: 1e-8
+  weight_decay: 0.05
+  amsgrad: False
+
+# Adam parameters if using Adam optimizer
+adam:
+  lr: 5e-4
+  betas:
+    - 0.9
+    - 0.999
+  eps: 1e-8
+  weight_decay: 0
+  amsgrad: False
+
+# RMSprop parameters if using RMSprop optimizer
+rmsprop:
+  lr: 1e-3
+  momentum: 0
+  alpha: 0.99
+  eps: 1e-8
+  centered: False
+  weight_decay: 0
+
+# SGD parameters if using SGD optimizer
+sgd:
+  lr: 1e-3
+  momentum: 0 # momentum factor
+  weight_decay: 0 # weight decay (L2 penalty)
+  dampening: 0 # dampening for momentum
+  nesterov: False # enables Nesterov momentum
