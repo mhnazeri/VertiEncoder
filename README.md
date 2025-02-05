@@ -1,4 +1,11 @@
+# [VertiEncoder: Self-Supervised Kinodynamic Representation Learning on Vertically Challenging Terrain](https://arxiv.org/abs/2409.11570)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Robotixx Open Source](docs/collection_Robotixx.svg)](https://robotixx.cs.gmu.edu/)
+
+[Mohammad Nazeri](https://mhnazeri.github.io/), [Aniket Datar](https://datar-aniket.github.io), [Anuj Pokhrel](https://anujpokhrel.github.io/), Chenhui Pan, Garrett Warnell, and [Xuesu Xiao](https://cs.gmu.edu/~xiao/)
+<hr style="border: 2px solid gray;"></hr>
+
+**Notice:** The improved implementation of VertiEncoder is now in [VertiFormer](https://github.com/mhnazeri/VertiFormer) repository. For reference implementation, please refer to the the new repository.
 
 The official PyTorch implementation of "VertiEncoder: Self-Supervised Kinodynamic Representation Learning on Vertically Challenging Terrain".
 
